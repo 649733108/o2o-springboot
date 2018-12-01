@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imooc.o2o.dao.WechatAuthDao">
+
+    <resultMap id="wechatAuthResultMap" type="com.imooc.o2o.entity.WechatAuth">
+        <id column="wechat_auth_id" property="wechatAuthId"/>
+        <result column="open_id" property="openId"/>
+        <result column="create_time" property="createTime"/>
+        <association property="personInfo" column="user_id"
+                     javaType="com.imooc.o2o.entity.PersonInfo">
+            <id column="user_id" property="userId"/>
+            <id column="name" property="name"/>
+            <id column="profile_img" property="profileImg"/>
+            <id column="email" property="email"/>
+            <id column="gender" property="gender"/>
+            <id column="enable_status" property="enableStatus"/>
+            <id column="user_type" property="userType"/>
+            <id column="create_time" property="createTime"/>
+            <id column="last_edit_time" property="lastEditTime"/>
+        </association>
+    </resultMap>
+
+    <select id="queryWechatInfoByOpenId" resultMap="wechatAuthResultMap"
+            parameterType="String">
+        select w.wechat_auth_id,
+               w.open_id,
+               w.create_time,
+               p.user_id,
+               p.name,
+               p.gender,
+               p.email,
+               p.profile_img,
+               p.user_type,
+               p.create_time,
+               p.last_edit_time,
+               p.enable_status
+        from tb_wechat_auth w
+                 LEFT JOIN tb_person_info p on w.user_id = p.user_id
+        where w.open_id = #{openId}
+    </select>
+
+    <insert id="insertWechatAuth" parameterType="com.imooc.o2o.entity.WechatAuth"
+            useGeneratedKeys="true" keyColumn="wechat_auth_id" keyProperty="wechatAuthId">
+        insert into tb_wechat_auth (user_id, open_id, create_time)
+        VALUES (#{personInfo.userId}, #{openId}, #{createTime})
+
+    </insert>
+
+
+</mapper>
